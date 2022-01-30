@@ -19,6 +19,9 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 nvm install --lts
 npm i -g npm
 
+# Install pm2
+npm i -g pm2
+
 # autoremove & autoclean
 sudo apt autoremove -y
 sudo apt autoclean
