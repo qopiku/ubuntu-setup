@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Change dir to /tmp
+cd /tmp
+
 # Update & upgrade packages
 sudo apt update
 sudo apt upgrade -y
