@@ -7,11 +7,14 @@ cd /tmp
 sudo apt update
 sudo apt upgrade -y
 
-# snstall net-tools
+# install net-tools
 sudo apt install -y net-tools
 
 # install development tools
 sudo apt install -y build-essential
+
+# install telnet
+sudo apt install -y telnet
 
 # install nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
