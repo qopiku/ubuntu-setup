@@ -1,4 +1,4 @@
-# VPS Setup :computer:
+# VPS Setup :desktop_computer:
 
 ```bash
 curl -o- https://raw.githubusercontent.com/sProDev/ubuntu-setup/main/vps.sh | bash
