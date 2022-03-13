@@ -44,7 +44,7 @@ rm -rf ./wkhtmltox_0.12.6-1.focal_amd64.deb
 
 # install ngrok
 wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.tgz
-sudo tar xvzf ~/Downloads/ngrok-stable-linux-amd64.tgz -C /usr/local/bin
+sudo tar xvzf ./ngrok-stable-linux-amd64.tgz -C /usr/local/bin
 
 # autoremove & autoclean
 sudo apt autoremove -y
