@@ -51,31 +51,56 @@ sudo apt install -y wget git
 sudo apt install -y zsh
 sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
 
+# install zsh-autosuggestions & zsh-syntax-higlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions 
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+
 # install zplug
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+
+# install dracula theme for zsh
+zplug install "dracula/zsh"
 
 # .zshrc configuration
 rm -f ~/.zshrc
 cat >> ~/.zshrc << 'END'
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export ZSH="$HOME/.oh-my-zsh"
-CASE_SENSITIVE="true"
+
 zstyle ':omz:update' mode auto
+
+CASE_SENSITIVE="true"
 DISABLE_AUTO_TITLE="true"
 ENABLE_CORRECTION="true"
 DISABLE_UNTRACKED_FILES_DIRTY="true"
-plugins=(git)
+
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+
 source $ZSH/oh-my-zsh.sh
 export MANPATH="/usr/local/man:$MANPATH"
 export LANG=en_US.UTF-8
+
 if [ -f ${HOME}/.zplug/init.zsh ]; then
     source ${HOME}/.zplug/init.zsh
 fi
+
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
 zplug "dracula/zsh", as:theme
+ZSH_THEME="dracula"
+zplug load
+
+DRACULA_DISPLAY_GIT=0
+DRACULA_DISPLAY_TIME=1
+DRACULA_DISPLAY_CONTEXT=1
+DRACULA_ARROW_ICON="->"
+DRACULA_DISPLAY_NEW_LINE=1
 END
+
+# set zsh as default shell
+sudo chsh -s $(which zsh) $(whoami)
 
 # autoremove & autoclean
 sudo apt autoremove -y
