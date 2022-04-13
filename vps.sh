@@ -73,37 +73,6 @@ pm2 start npm --name "pdfbot" -- start
 # change dir to /tmp
 cd /tmp
 
-# install ohmyzsh
-sudo apt install -y wget git
-sudo apt install -y zsh
-sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
-
-# install zplug
-curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
-
-# .zshrc configuration
-rm -f ~/.zshrc
-cat >> ~/.zshrc << 'END'
-export PATH=$HOME/bin:/usr/local/bin:$PATH
-export ZSH="$HOME/.oh-my-zsh"
-CASE_SENSITIVE="true"
-zstyle ':omz:update' mode auto
-DISABLE_AUTO_TITLE="true"
-ENABLE_CORRECTION="true"
-DISABLE_UNTRACKED_FILES_DIRTY="true"
-plugins=(git)
-source $ZSH/oh-my-zsh.sh
-export MANPATH="/usr/local/man:$MANPATH"
-export LANG=en_US.UTF-8
-if [ -f ${HOME}/.zplug/init.zsh ]; then
-    source ${HOME}/.zplug/init.zsh
-fi
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-zplug "dracula/zsh", as:theme
-END
-
 # autoremove & autoclean
 sudo apt autoremove -y
 sudo apt autoclean

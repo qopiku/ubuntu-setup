@@ -54,9 +54,6 @@ sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O 
 # install zplug
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 
-# install dracula theme for zsh
-zplug install "dracula/zsh"
-
 # .zshrc configuration
 rm -f ~/.zshrc
 cat >> ~/.zshrc << 'END'
@@ -105,6 +102,9 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/p
 
 # load zplug
 zplug load
+
+# install dracula theme for zsh
+zplug install "dracula/zsh"
 
 # autoremove & autoclean
 sudo apt autoremove -y
