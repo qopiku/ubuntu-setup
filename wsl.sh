@@ -48,6 +48,7 @@ sudo tar xvzf ./ngrok-stable-linux-amd64.tgz -C /usr/local/bin
 
 # install ohmyzsh
 sudo apt install -y wget git
+sudo apt install -y zsh
 sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
 
 # install zplug
