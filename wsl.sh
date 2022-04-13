@@ -51,10 +51,6 @@ sudo apt install -y wget git
 sudo apt install -y zsh
 sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
 
-# install zsh-autosuggestions & zsh-syntax-higlighting
-git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions 
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
-
 # install zplug
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 
@@ -98,6 +94,13 @@ DRACULA_DISPLAY_CONTEXT=1
 DRACULA_ARROW_ICON="->"
 DRACULA_DISPLAY_NEW_LINE=1
 END
+
+# install zsh-autosuggestions & zsh-syntax-higlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions 
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+
+# load zplug
+zplug load
 
 # set zsh as default shell
 sudo chsh -s $(which zsh) $(whoami)
