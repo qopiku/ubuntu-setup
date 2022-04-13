@@ -47,7 +47,7 @@ nvm install --lts
 npm i -g npm yarn
 
 # install pm2 & connect to pm2+ monit
-npm i -g pm2
+yarn global add pm2
 pm2 link ${PM2_SECRET_KEY} ${PM2_PUBLIC_KEY}
 
 # enable pm2 at startup
