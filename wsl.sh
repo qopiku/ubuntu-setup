@@ -95,15 +95,16 @@ DRACULA_ARROW_ICON="->"
 DRACULA_DISPLAY_NEW_LINE=1
 END
 
+# set zsh as default shell
+sudo chsh -s $(which zsh) $(whoami)
+
 # install zsh-autosuggestions & zsh-syntax-higlighting
+export ZSH_CUSTOM=~/.oh-my-zsh/custom
 git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions 
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 
 # load zplug
 zplug load
-
-# set zsh as default shell
-sudo chsh -s $(which zsh) $(whoami)
 
 # autoremove & autoclean
 sudo apt autoremove -y
