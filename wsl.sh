@@ -29,10 +29,10 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 
 # install node.js
 nvm install --lts
-npm i -g npm
+npm i -g npm yarn
 
 # install personal utility
-npm i -g yarn vercel typescript concurrently heroku lerna
+yarn global add vercel typescript concurrently heroku lerna
 
 # install libreoffice
 sudo apt install -y libreoffice
@@ -50,6 +50,9 @@ sudo tar xvzf ./ngrok-stable-linux-amd64.tgz -C /usr/local/bin
 sudo apt install -y wget git
 sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
 
+# install zplug
+curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+
 # zsh aliases
 cat >> ~/.zshrc << 'END'
 alias ll="ls -ltra"
@@ -57,6 +60,8 @@ alias gd="git diff"
 alias gcmsg="git commit -m"
 alias gitc="git checkout"
 alias gitm="git checkout master"
+
+zplug "dracula/zsh", as:theme
 END
 
 # autoremove & autoclean
