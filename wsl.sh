@@ -32,7 +32,7 @@ nvm install --lts
 npm i -g npm
 
 # install personal utility
-npm i -g yarn pnpm vercel typescript concurrently
+npm i -g yarn vercel typescript concurrently heroku lerna
 
 # install libreoffice
 sudo apt install -y libreoffice
@@ -45,6 +45,19 @@ rm -rf ./wkhtmltox_0.12.6-1.focal_amd64.deb
 # install ngrok
 wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.tgz
 sudo tar xvzf ./ngrok-stable-linux-amd64.tgz -C /usr/local/bin
+
+# install ohmyzsh
+sudo apt install -y wget git
+sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
+
+# zsh aliases
+cat >> ~/.zshrc << 'END'
+alias ll="ls -ltra"
+alias gd="git diff"
+alias gcmsg="git commit -m"
+alias gitc="git checkout"
+alias gitm="git checkout master"
+END
 
 # autoremove & autoclean
 sudo apt autoremove -y
