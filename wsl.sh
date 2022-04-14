@@ -10,17 +10,8 @@ cd /tmp
 sudo apt update
 sudo apt upgrade -y
 
-# install net-tools
-sudo apt install -y net-tools
-
-# install development tools
-sudo apt install -y build-essential
-
-# install telnet
-sudo apt install -y telnet
-
-# install zip unzip
-sudo apt install -y zip unzip
+# install initial dependencies
+sudo apt install -y net-tools build-essential telnet zip unzip cmake
 
 # generate missing locale
 sudo locale-gen id_ID.UTF-8
@@ -35,8 +26,7 @@ nvm install --lts
 npm i -g npm yarn
 
 # install personal utility
-npm i -g concurrently
-yarn global add vercel typescript heroku lerna
+yarn global add typescript concurrently nodemon vercel heroku lerna
 
 # install libreoffice
 sudo apt install -y libreoffice
