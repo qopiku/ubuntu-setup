@@ -22,6 +22,9 @@ sudo apt install -y telnet
 # install zip unzip
 sudo apt install -y zip unzip
 
+# generate missing locale
+sudo locale-gen id_ID.UTF-8
+
 # install nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
@@ -32,7 +35,8 @@ nvm install --lts
 npm i -g npm yarn
 
 # install personal utility
-yarn global add vercel typescript concurrently heroku lerna
+npm i -g concurrently
+yarn global add vercel typescript heroku lerna
 
 # install libreoffice
 sudo apt install -y libreoffice
@@ -46,7 +50,7 @@ rm -rf ./wkhtmltox_0.12.6-1.focal_amd64.deb
 wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.tgz
 sudo tar xvzf ./ngrok-stable-linux-amd64.tgz -C /usr/local/bin
 
-# install ohmyzsh
+# install oh-my-zsh
 sudo apt install -y wget git
 sudo apt install -y zsh
 sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
@@ -55,8 +59,7 @@ sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O 
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 
 # .zshrc configuration
-rm -f ~/.zshrc
-cat >> ~/.zshrc << 'END'
+rm -f ~/.zshrc && cat >> ~/.zshrc << 'END'
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -67,37 +70,46 @@ DISABLE_AUTO_TITLE="true"
 ENABLE_CORRECTION="true"
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 export MANPATH="/usr/local/man:$MANPATH"
-export LANG=en_US.UTF-8
+export LANG=id_ID.UTF-8
 
+# zplug init
 if [ -f ${HOME}/.zplug/init.zsh ]; then
     source ${HOME}/.zplug/init.zsh
 fi
 
+# nvm
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
+# zplug loader
 zplug "dracula/zsh", as:theme
 ZSH_THEME="dracula"
 zplug load
 
+# dracula theme configuration
 DRACULA_DISPLAY_GIT=0
 DRACULA_DISPLAY_TIME=1
 DRACULA_DISPLAY_CONTEXT=1
 DRACULA_ARROW_ICON="->"
 DRACULA_DISPLAY_NEW_LINE=1
+
+# yarn
+export PATH="$(yarn global bin):$PATH"
+
+# custom alias
+alias sdev="concurrently \"yarn watch\" \"php spark serve\""
 END
 
 # set zsh as default shell
 sudo chsh -s $(which zsh) $(whoami)
 
-# install zsh-autosuggestions & zsh-syntax-higlighting
+# install zsh-syntax-higlighting
 export ZSH_CUSTOM=~/.oh-my-zsh/custom
-git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions 
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 
 # load zplug
