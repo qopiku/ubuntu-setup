@@ -11,10 +11,32 @@ sudo apt update
 sudo apt upgrade -y
 
 # install initial dependencies
-sudo apt install -y net-tools build-essential telnet zip unzip cmake
+sudo apt install -y net-tools build-essential telnet zip unzip cmake php
 
 # generate missing locale
 sudo locale-gen id_ID.UTF-8
+
+# install docker
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs)  stable" -y
+sudo apt update
+apt-cache policy docker-ce
+sudo apt install -y docker-ce
+
+# enable docker service
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# install docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+# install composer
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
 
 # install nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
@@ -28,6 +50,20 @@ npm i -g npm yarn
 # install personal utility
 yarn global add typescript concurrently nodemon vercel heroku lerna
 
+# install rust & cargo
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# install prettyping
+wget https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping
+chmod +x ./prettyping
+mv ./prettyping /usr/local/bin
+
+# install bat
+git clone --recursive https://github.com/sharkdp/bat
+cd bat && cargo build --bins
+bash assets/create.sh
+cargo install --path . --locked --force
+
 # install libreoffice
 sudo apt install -y libreoffice
 
@@ -36,9 +72,8 @@ wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmlt
 sudo apt install -y ./wkhtmltox_0.12.6-1.focal_amd64.deb
 rm -rf ./wkhtmltox_0.12.6-1.focal_amd64.deb
 
-# install ngrok
-wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.tgz
-sudo tar xvzf ./ngrok-stable-linux-amd64.tgz -C /usr/local/bin
+# install encore.dev
+curl -L https://encore.dev/install.sh | bash
 
 # install oh-my-zsh
 sudo apt install -y wget git
@@ -49,32 +84,46 @@ sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O 
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 
 # .zshrc configuration
-rm -f ~/.zshrc && cat >> ~/.zshrc << 'END'
+mv ~/.zshrc ~/.zshrc.bak && cat >> ~/.zshrc << 'END'
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export ZSH="$HOME/.oh-my-zsh"
 
 zstyle ':omz:update' mode auto
 
 CASE_SENSITIVE="true"
-DISABLE_AUTO_TITLE="true"
-ENABLE_CORRECTION="true"
+DISABLE_AUTO_TITLE="false"
+ENABLE_CORRECTION="false"
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-plugins=(git zsh-syntax-highlighting)
+plugins=(
+    git
+    docker
+    docker-compose
+    zsh-syntax-highlighting
+    zsh-autosuggestions
+)
 
 source $ZSH/oh-my-zsh.sh
 export MANPATH="/usr/local/man:$MANPATH"
 export LANG=id_ID.UTF-8
 
+if [[ -z "$skip_global_compinit" ]]; then
+    autoload -U compinit
+fi
+
+export ZSH_COMPDUMP="${ZSH_CACHE_DIR}/.zcompdump-${(%):-%m}-${ZSH_VERSION}"
+
+if [[ $ZSH_DISABLE_COMPFIX != true ]]; then
+    handle_completion_insecurities
+    compinit -i -C -d "${ZSH_COMPDUMP}"
+else
+    compinit -u -C -d "${ZSH_COMPDUMP}"
+fi
+
 # zplug init
 if [ -f ${HOME}/.zplug/init.zsh ]; then
     source ${HOME}/.zplug/init.zsh
 fi
-
-# nvm
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 # zplug loader
 zplug "dracula/zsh", as:theme
@@ -82,17 +131,37 @@ ZSH_THEME="dracula"
 zplug load
 
 # dracula theme configuration
-DRACULA_DISPLAY_GIT=0
-DRACULA_DISPLAY_TIME=1
+DRACULA_DISPLAY_GIT=1
+DRACULA_DISPLAY_TIME=0
 DRACULA_DISPLAY_CONTEXT=1
 DRACULA_ARROW_ICON="->"
 DRACULA_DISPLAY_NEW_LINE=1
 
-# yarn
-export PATH="$(yarn global bin):$PATH"
+# gpg
+export GPG_TTY=$(tty)
+
+# nvm & yarn
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+export PATH="$PATH:`yarn global bin`"
+
+# encore.dev
+export ENCORE_INSTALL="~/.encore"
+export PATH="$ENCORE_INSTALL/bin:$PATH"
+
+# composer
+export PATH="$(composer -n config --global home)/vendor/bin:$PATH"
 
 # custom alias
-alias sdev="concurrently \"yarn watch\" \"php spark serve\""
+alias cls="clear"
+alias sdev="concurrently \"yarn watch\" \"php spark serve --host 0.0.0.0\""
+alias ping="prettyping"
+alias cat="bat"
+
+# tabtab source for packages
+# uninstall by removing these lines
+[[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
 END
 
 # set zsh as default shell
