@@ -197,9 +197,10 @@ END
 # set zsh as default shell
 sudo chsh -s $(which zsh) $(whoami)
 
-# install zsh-syntax-higlighting
+# install zsh plugins
 export ZSH_CUSTOM=~/.oh-my-zsh/custom
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions
 
 # load zplug
 zplug load
@@ -208,8 +209,7 @@ zplug load
 zplug install "dracula/zsh"
 
 # autoremove & autoclean
-sudo apt autoremove -y
-sudo apt autoclean
+sudo apt autoremove -y && sudo apt autoclean
 
 # change dir to CURR_DIR
 cd ${CURR_DIR}
