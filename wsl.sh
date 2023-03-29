@@ -7,16 +7,17 @@ CURR_DIR=$(pwd)
 cd /tmp
 
 # update & upgrade packages
-sudo apt update
-sudo apt upgrade -y
+sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean
 
 # install initial dependencies
 sudo apt install -y net-tools build-essential telnet zip unzip cmake
 
-sudo cat >> /etc/wsl.conf << 'END'
+# wsl configuration
+cat >> /tmp/wsl.conf << 'END'
 [boot]
 systemd=true
 END
+sudo mv /tmp/wsl.conf /etc/wsl.conf
 
 # generate missing locale
 sudo locale-gen id_ID.UTF-8
@@ -26,7 +27,7 @@ sudo apt install -y apt-transport-https ca-certificates curl software-properties
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs)  stable" -y
 sudo apt update
-apt-cache policy docker-ce
+sudo apt-cache policy docker-ce
 sudo apt install -y docker-ce
 
 # enable docker service
@@ -43,11 +44,16 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 # install node.js
-nvm install --lts
+nvm install 16.14.2
 npm i -g npm yarn
 
 # install personal utility
 yarn global add typescript concurrently nodemon vercel heroku lerna
+
+# install apache2
+sudo apt install -y apache2 libapache2-mod-php
+sudo systemctl start apache2
+sudo systemctl enable apache2
 
 # install php7.4
 sudo add-apt-repository --yes ppa:ondrej/php
@@ -67,11 +73,6 @@ sudo apt install -y mariadb-server
 sudo systemctl start mariadb
 sudo systemctl enable mariadb
 sudo mysql_secure_installation
-
-# install apache2
-sudo apt install -y apache2 libapache2-mod-php
-sudo systemctl start apache2
-sudo systemctl enable apache2
 
 # install phpmyadmin
 sudo apt install -y phpmyadmin
