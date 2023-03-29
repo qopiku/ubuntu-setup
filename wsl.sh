@@ -96,8 +96,7 @@ bash assets/create.sh
 cargo install --path . --locked --force
 
 # install oh-my-zsh
-sudo apt install -y wget git
-sudo apt install -y zsh
+sudo apt install -y wget git zsh
 sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
 
 # install zplug
