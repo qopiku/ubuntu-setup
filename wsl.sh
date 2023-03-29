@@ -11,7 +11,12 @@ sudo apt update
 sudo apt upgrade -y
 
 # install initial dependencies
-sudo apt install -y net-tools build-essential telnet zip unzip cmake php
+sudo apt install -y net-tools build-essential telnet zip unzip cmake
+
+sudo cat >> /etc/wsl.conf << 'END'
+[boot]
+systemd=true
+END
 
 # generate missing locale
 sudo locale-gen id_ID.UTF-8
@@ -32,12 +37,6 @@ sudo systemctl enable docker
 sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
-# install composer
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-php composer-setup.php
-php -r "unlink('composer-setup.php');"
-
 # install nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
@@ -50,6 +49,34 @@ npm i -g npm yarn
 # install personal utility
 yarn global add typescript concurrently nodemon vercel heroku lerna
 
+# install php7.4
+sudo add-apt-repository --yes ppa:ondrej/php
+sudo apt update
+sudo apt install -y php7.4
+sudo apt install -y php7.4-cli php7.4-json php7.4-common php7.4-mysql php7.4-zip php7.4-gd php7.4-mbstring php7.4-curl php7.4-xml php7.4-bcmath
+
+# install composer
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+sudo mv composer.phar /usr/local/bin/composer
+
+# install mariadb
+sudo apt install mariadb-server
+sudo systemctl start mariadb
+sudo systemctl enable mariadb
+sudo mysql_secure_installation
+
+# install apache2
+sudo apt install apache2 libapache2-mod-php
+
+# install phpmyadmin
+sudo apt install phpmyadmin
+
+# install bun
+curl -fsSL https://bun.sh/install | bash
+
 # install rust & cargo
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
@@ -60,20 +87,10 @@ mv ./prettyping /usr/local/bin
 
 # install bat
 git clone --recursive https://github.com/sharkdp/bat
-cd bat && cargo build --bins
+cd bat && cargo build --bins && cargo test
+cargo install --path . --locked
 bash assets/create.sh
 cargo install --path . --locked --force
-
-# install libreoffice
-sudo apt install -y libreoffice
-
-# install wkhtmltopdf
-wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.focal_amd64.deb
-sudo apt install -y ./wkhtmltox_0.12.6-1.focal_amd64.deb
-rm -rf ./wkhtmltox_0.12.6-1.focal_amd64.deb
-
-# install encore.dev
-curl -L https://encore.dev/install.sh | bash
 
 # install oh-my-zsh
 sudo apt install -y wget git
@@ -91,9 +108,14 @@ export ZSH="$HOME/.oh-my-zsh"
 zstyle ':omz:update' mode auto
 
 CASE_SENSITIVE="true"
+HYPHEN_INSENSITIVE="false"
+DISABLE_MAGIC_FUNCTIONS="false"
+DISABLE_LS_COLORS="false"
 DISABLE_AUTO_TITLE="false"
 ENABLE_CORRECTION="false"
+COMPLETION_WAITING_DOTS="true"
 DISABLE_UNTRACKED_FILES_DIRTY="true"
+HIST_STAMPS="dd-mm-yyyy"
 
 plugins=(
     git
@@ -106,6 +128,7 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 export MANPATH="/usr/local/man:$MANPATH"
 export LANG=id_ID.UTF-8
+export ARCHFLAGS="-arch x86_64"
 
 if [[ -z "$skip_global_compinit" ]]; then
     autoload -U compinit
@@ -134,8 +157,9 @@ zplug load
 DRACULA_DISPLAY_GIT=1
 DRACULA_DISPLAY_TIME=0
 DRACULA_DISPLAY_CONTEXT=1
-DRACULA_ARROW_ICON="->"
-DRACULA_DISPLAY_NEW_LINE=1
+DRACULA_DISPLAY_FULL_CWD=0
+DRACULA_ARROW_ICON="\-> "
+DRACULA_DISPLAY_NEW_LINE=0
 
 # gpg
 export GPG_TTY=$(tty)
@@ -146,18 +170,22 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 export PATH="$PATH:`yarn global bin`"
 
-# encore.dev
-export ENCORE_INSTALL="~/.encore"
-export PATH="$ENCORE_INSTALL/bin:$PATH"
-
-# composer
-export PATH="$(composer -n config --global home)/vendor/bin:$PATH"
+# cargo
+. "$HOME/.cargo/env"
 
 # custom alias
 alias cls="clear"
-alias sdev="concurrently \"yarn watch\" \"php spark serve --host 0.0.0.0\""
 alias ping="prettyping"
 alias cat="bat"
+alias nace="node ace"
+alias grep="grep --color --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=.git"
+
+# bun completions
+[ -s "/home/suluh/.bun/_bun" ] && source "/home/suluh/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
 
 # tabtab source for packages
 # uninstall by removing these lines
