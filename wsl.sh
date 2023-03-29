@@ -63,16 +63,18 @@ php -r "unlink('composer-setup.php');"
 sudo mv composer.phar /usr/local/bin/composer
 
 # install mariadb
-sudo apt install mariadb-server
+sudo apt install -y mariadb-server
 sudo systemctl start mariadb
 sudo systemctl enable mariadb
 sudo mysql_secure_installation
 
 # install apache2
-sudo apt install apache2 libapache2-mod-php
+sudo apt install -y apache2 libapache2-mod-php
+sudo systemctl start apache2
+sudo systemctl enable apache2
 
 # install phpmyadmin
-sudo apt install phpmyadmin
+sudo apt install -y phpmyadmin
 
 # install bun
 curl -fsSL https://bun.sh/install | bash
@@ -83,7 +85,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 # install prettyping
 wget https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping
 chmod +x ./prettyping
-mv ./prettyping /usr/local/bin
+sudo mv ./prettyping /usr/local/bin
 
 # install bat
 git clone --recursive https://github.com/sharkdp/bat
