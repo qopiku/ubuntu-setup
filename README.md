@@ -1,10 +1,10 @@
-# VPS Setup :desktop_computer:
+# VPS Setup
 
 ```bash
 curl -o- https://raw.githubusercontent.com/sProDev/ubuntu-setup/main/vps.sh | bash
 ```
 
-# WSL Setup :computer:
+# WSL Setup
 
 ```bash
 curl -o- https://raw.githubusercontent.com/sProDev/ubuntu-setup/main/wsl.sh | bash
