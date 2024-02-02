@@ -1,0 +1,87 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+get_file_mime_type() {
+    local filename=$1
+
+    file -b --mime-type "$filename"
+}
+
+get_files_in_working_directory() {
+    local files=''
+
+    for filename in ./*; do
+        case $(get_file_mime_type "$filename") in
+        "image/png" | "image/jpeg" | "image/svg" | "image/svg+xml")
+            files+="$filename\n"
+            ;;
+        esac
+    done
+
+    echo -ne "$files"
+}
+
+optimize_file() {
+    local filename=$1
+
+    case $(get_file_mime_type "$filename") in
+    "image/png")
+        # http://www.kompresja-grafiki-rastrowej-png-gif.cba.pl/
+        (
+            set -x +e
+            optipng -o7 -zm1-9 "$filename"
+            pngcrush -brute -ow "$filename"
+            pngout "$filename" "$filename" -y
+            advpng -z4 "$filename"
+        ) || true
+        ;;
+    "image/jpeg")
+        # https://guides.wp-bullet.com/batch-optimize-jpg-lossy-linux-command-line-with-jpeg-recompress/
+        (
+            set -x +e
+            jpegoptim --strip-all "$filename"
+            jpeg-recompress --quality medium --method smallfry --accurate \
+                --min 80 --max 92 "$filename" "$filename"
+        ) || true
+        ;;
+    "image/svg" | "image/svg+xml")
+        (
+            set -x +e
+            svgo -i "$filename"
+        ) || true
+        ;;
+    esac
+}
+
+main() {
+    for binary in "optipng" "advpng" "pngcrush" "pngout" "jpegoptim" "jpeg-recompress" "svgo"; do
+        if ! command -v $binary >/dev/null; then
+            echo "Error: there is no \"$binary\" binary."
+            exit 1
+        fi
+    done
+
+    if [[ -n "$@" ]]; then
+        local files=("$@")
+    else
+        read -p "Are you sure you want to optimize all images in cwd? (yes/no) "
+        if [[ $REPLY != "yes" ]]; then
+            exit
+        fi
+
+        local files=$(get_files_in_working_directory)
+
+        if [[ -z $files ]]; then
+            echo "There is no images here."
+            exit 1
+        fi
+    fi
+
+    for filename in ${files[*]}; do
+        echo -e "\n\033[1;33m→ $filename\e[0m\n"
+        optimize_file "$filename"
+    done
+}
+
+main $@
