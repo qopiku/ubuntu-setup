@@ -10,7 +10,7 @@ cd /tmp
 sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean
 
 # install initial dependencies
-sudo apt install -y net-tools build-essential telnet zip unzip cmake
+sudo apt install -y net-tools build-essential telnet zip unzip cmake software-properties-common ca-certificates lsb-release apt-transport-https
 
 # wsl configuration
 cat >> /tmp/wsl.conf << 'END'
@@ -22,33 +22,22 @@ sudo mv /tmp/wsl.conf /etc/wsl.conf
 # generate missing locale
 sudo locale-gen id_ID.UTF-8
 
-# install docker
-sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs)  stable" -y
-sudo apt update
-sudo apt-cache policy docker-ce
-sudo apt install -y docker-ce
-
-# enable docker service
-sudo systemctl start docker
-sudo systemctl enable docker
-
-# install docker-compose
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-
 # install nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 # install node.js
-nvm install 16.14.2
+nvm install lts/fermium
+nvm install lts/gallium
+nvm install lts/hydrogen
+nvm install lts/iron
+nvm alias default lts/hydrogen
+nvm use lts/hydrogen
 npm i -g npm yarn
 
 # install personal utility
-yarn global add typescript concurrently nodemon vercel heroku lerna
+yarn global add typescript vercel commitizen jpeg-recompress-bin svgo minify stacks-cli svgo wappalyzer@6.10.66
 
 # install apache2
 sudo apt install -y apache2 libapache2-mod-php
@@ -56,10 +45,12 @@ sudo systemctl start apache2
 sudo systemctl enable apache2
 
 # install php7.4
-sudo add-apt-repository --yes ppa:ondrej/php
+LC_ALL=C.UTF-8 sudo add-apt-repository --yes ppa:ondrej/php
 sudo apt update
 sudo apt install -y php7.4
 sudo apt install -y php7.4-cli php7.4-json php7.4-common php7.4-mysql php7.4-zip php7.4-gd php7.4-mbstring php7.4-curl php7.4-xml php7.4-bcmath php7.4-intl
+sudo apt install -y php8.2
+sudo apt install -y php8.2-cli php8.2-json php8.2-common php8.2-mysql php8.2-zip php8.2-gd php8.2-mbstring php8.2-curl php8.2-xml php8.2-bcmath php8.2-intl
 
 # install composer
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -80,9 +71,6 @@ sudo apt install -y phpmyadmin
 # install bun
 curl -fsSL https://bun.sh/install | bash
 
-# install rust & cargo
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
 # install prettyping
 wget https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping
 chmod +x ./prettyping
@@ -95,6 +83,26 @@ cargo install --path . --locked
 bash assets/create.sh
 cargo install --path . --locked --force
 
+# install bkg
+curl -fsSL https://github.com/theseyan/bkg/raw/main/install.sh | sudo sh
+
+# install cloudflared
+wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+chmod +x ./cloudflared-linux-amd64
+sudo mv ./cloudflared-linux-amd64 /usr/local/bin/cloudflared
+
+# install optimag
+sudo apt install -y sudo apt install imagemagick optipng pngcrush advancecomp jpegoptim
+sudo apt install libjpeg-progs graphicsmagick gifsicle
+wget http://static.jonof.id.au/dl/kenutils/pngout-20150319-linux.tar.gz
+tar -xf pngout-20150319-linux.tar.gz
+rm pngout-20150319-linux.tar.gz
+sudo cp pngout-20150319-linux/x86_64/pngout /bin/pngout
+rm -rf pngout-20150319-linux
+wget https://github.com/qopiku/ubuntu-setup/raw/main/optimag
+chmod +x optimag
+mv ./optimag /usr/local/bin
+
 # install oh-my-zsh
 sudo apt install -y wget git zsh
 sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
@@ -104,8 +112,9 @@ curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/instal
 
 # .zshrc configuration
 mv ~/.zshrc ~/.zshrc.bak && cat >> ~/.zshrc << 'END'
-export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH
 export ZSH="$HOME/.oh-my-zsh"
+export ZSH_WAKATIME_PROJECT_DETECTION=false
 
 zstyle ':omz:update' mode auto
 
@@ -121,13 +130,13 @@ HIST_STAMPS="dd-mm-yyyy"
 
 plugins=(
     git
-    docker
-    docker-compose
     zsh-syntax-highlighting
     zsh-autosuggestions
+    zsh-wakatime
 )
 
 source $ZSH/oh-my-zsh.sh
+
 export MANPATH="/usr/local/man:$MANPATH"
 export LANG=id_ID.UTF-8
 export ARCHFLAGS="-arch x86_64"
@@ -160,7 +169,7 @@ DRACULA_DISPLAY_GIT=1
 DRACULA_DISPLAY_TIME=0
 DRACULA_DISPLAY_CONTEXT=1
 DRACULA_DISPLAY_FULL_CWD=0
-DRACULA_ARROW_ICON="\-> "
+DRACULA_ARROW_ICON="→ "
 DRACULA_DISPLAY_NEW_LINE=0
 
 # gpg
@@ -180,14 +189,22 @@ alias cls="clear"
 alias ping="prettyping"
 alias cat="bat"
 alias nace="node ace"
+alias artisan="php artisan"
+alias spark="php7.4 spark"
 alias grep="grep --color --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=.git"
 
 # bun completions
 [ -s "/home/suluh/.bun/_bun" ] && source "/home/suluh/.bun/_bun"
 
+# env variables
+export GITLAB_TOKEN=glpat-vh4iUSArMznt2QTKduvV
+
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# composer
+export PATH=$(composer global config bin-dir --absolute --quiet):$PATH
 
 # tabtab source for packages
 # uninstall by removing these lines
