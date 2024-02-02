@@ -50,7 +50,7 @@ sudo apt update
 sudo apt install -y php7.4
 sudo apt install -y php7.4-cli php7.4-json php7.4-common php7.4-mysql php7.4-zip php7.4-gd php7.4-mbstring php7.4-curl php7.4-xml php7.4-bcmath php7.4-intl
 sudo apt install -y php8.2
-sudo apt install -y php8.2-cli php8.2-json php8.2-common php8.2-mysql php8.2-zip php8.2-gd php8.2-mbstring php8.2-curl php8.2-xml php8.2-bcmath php8.2-intl
+sudo apt install -y php8.2-cli php8.2-common php8.2-mysql php8.2-zip php8.2-gd php8.2-mbstring php8.2-curl php8.2-xml php8.2-bcmath php8.2-intl
 
 # install composer
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -63,7 +63,7 @@ sudo mv composer.phar /usr/local/bin/composer
 sudo apt install -y mariadb-server
 sudo systemctl start mariadb
 sudo systemctl enable mariadb
-sudo mysql_secure_installation
+# sudo mysql_secure_installation
 
 # install phpmyadmin
 sudo apt install -y phpmyadmin
