@@ -76,6 +76,9 @@ wget https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping
 chmod +x ./prettyping
 sudo mv ./prettyping /usr/local/bin
 
+# install rust & cargo
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
 # install bat
 git clone --recursive https://github.com/sharkdp/bat
 cd bat && cargo build --bins && cargo test
