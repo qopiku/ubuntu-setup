@@ -80,11 +80,7 @@ sudo mv ./prettyping /usr/local/bin
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 # install bat
-git clone --recursive https://github.com/sharkdp/bat
-cd bat && cargo build --bins && cargo test
-cargo install --path . --locked
-bash assets/create.sh
-cargo install --path . --locked --force
+cargo install --locked bat
 
 # install bkg
 curl -fsSL https://github.com/theseyan/bkg/raw/main/install.sh | sudo sh
