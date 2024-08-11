@@ -70,7 +70,38 @@ sudo systemctl enable --now mariadb
 
 # install phpmyadmin
 sudo apt install -y phpmyadmin
+sudo chmod -R 755 /usr/share/phpmyadmin
+sudo chown -R www-data:www-data /usr/share/phpmyadmin
 sudo ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
+
+# default nginx conf
+cat >> /tmp/nginx.conf << 'END'
+server {
+  listen 80 default_server;
+  listen [::]:80 default_server;
+
+  server_name _;
+  root /var/www/html;
+
+  index index.php index.html index.htm index.nginx-debian.html;
+
+  location / {
+    try_files $uri $uri/ =404;
+  }
+
+  location ~ \.php$ {
+    include snippets/fastcgi-php.conf;
+    fastcgi_pass unix:/run/php/php8.1-fpm.sock;
+    fastcgi_param SCRIPT_FILENAME $request_filename;
+  }
+
+  location ~ /\.ht {
+    deny all;
+  }
+}
+END
+sudo mv /tmp/nginx.conf /etc/nginx/sites-available/default
+sudo systemctl restart nginx
 
 # install bun
 curl -fsSL https://bun.sh/install | bash
