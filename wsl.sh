@@ -70,7 +70,7 @@ sudo systemctl enable --now mariadb
 
 # install phpmyadmin
 sudo apt install -y phpmyadmin
-sudo ln -s /usr/share/phpmyadmin /var/www/phpmyadmin
+sudo ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
 
 # install bun
 curl -fsSL https://bun.sh/install | bash
@@ -82,12 +82,10 @@ sudo mv ./prettyping /usr/local/bin
 
 # install rust & cargo
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+. "$HOME/.cargo/env"
 
 # install bat
 cargo install --locked bat
-
-# install bkg
-curl -fsSL https://github.com/theseyan/bkg/raw/main/install.sh | sudo sh
 
 # install cloudflared
 wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
@@ -95,8 +93,7 @@ chmod +x ./cloudflared-linux-amd64
 sudo mv ./cloudflared-linux-amd64 /usr/local/bin/cloudflared
 
 # install optimag
-sudo apt install -y sudo apt install imagemagick optipng pngcrush advancecomp jpegoptim
-sudo apt install libjpeg-progs graphicsmagick gifsicle
+sudo apt install -y imagemagick optipng pngcrush advancecomp jpegoptim libjpeg-progs graphicsmagick gifsicle
 wget http://static.jonof.id.au/dl/kenutils/pngout-20150319-linux.tar.gz
 tar -xf pngout-20150319-linux.tar.gz
 rm pngout-20150319-linux.tar.gz
@@ -104,7 +101,7 @@ sudo cp pngout-20150319-linux/x86_64/pngout /bin/pngout
 rm -rf pngout-20150319-linux
 wget https://github.com/qopiku/ubuntu-setup/raw/main/optimag
 chmod +x optimag
-mv ./optimag /usr/local/bin
+sudo mv ./optimag /usr/local/bin
 
 # install oh-my-zsh
 sudo apt install -y wget git zsh
@@ -117,7 +114,6 @@ curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/instal
 mv ~/.zshrc ~/.zshrc.bak && cat >> ~/.zshrc << 'END'
 export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH
 export ZSH="$HOME/.oh-my-zsh"
-export ZSH_WAKATIME_PROJECT_DETECTION=false
 
 zstyle ':omz:update' mode auto
 
@@ -135,7 +131,6 @@ plugins=(
     git
     zsh-syntax-highlighting
     zsh-autosuggestions
-    zsh-wakatime
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -178,11 +173,10 @@ DRACULA_DISPLAY_NEW_LINE=0
 # gpg
 export GPG_TTY=$(tty)
 
-# nvm & yarn
+# nvm
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-export PATH="$PATH:`yarn global bin`"
 
 # cargo
 . "$HOME/.cargo/env"
@@ -199,12 +193,9 @@ alias grep="grep --color --exclude-dir=node_modules --exclude-dir=vendor --exclu
 # bun completions
 [ -s "/home/suluh/.bun/_bun" ] && source "/home/suluh/.bun/_bun"
 
-# env variables
-export GITLAB_TOKEN=glpat-vh4iUSArMznt2QTKduvV
-
 # bun
 export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+export PATH=$BUN_INSTALL/bin:$PATH
 
 # composer
 export PATH=$(composer global config bin-dir --absolute --quiet):$PATH
@@ -223,7 +214,7 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/p
 git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions
 
 # load zplug
-zplug load
+. ~/.zshrc && zplug load
 
 # install dracula theme for zsh
 zplug install "dracula/zsh"
