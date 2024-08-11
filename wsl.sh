@@ -16,6 +16,10 @@ sudo apt install -y net-tools build-essential telnet zip unzip cmake software-pr
 cat >> /tmp/wsl.conf << 'END'
 [boot]
 systemd=true
+
+[network]
+hostname=dev
+generateHosts=false
 END
 sudo mv /tmp/wsl.conf /etc/wsl.conf
 
@@ -23,7 +27,7 @@ sudo mv /tmp/wsl.conf /etc/wsl.conf
 sudo locale-gen id_ID.UTF-8
 
 # install nvm
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
@@ -34,39 +38,39 @@ nvm install lts/hydrogen
 nvm install lts/iron
 nvm alias default lts/hydrogen
 nvm use lts/hydrogen
-npm i -g npm yarn
+npm i -g npm@latest
 
 # install personal utility
-yarn global add typescript vercel commitizen jpeg-recompress-bin svgo minify stacks-cli svgo wappalyzer@6.10.66
+npm i -g typescript vercel commitizen jpeg-recompress-bin svgo minify stacks-cli svgo wappalyzer@6.10.66
 
 # install apache2
-sudo apt install -y apache2 libapache2-mod-php
-sudo systemctl start apache2
-sudo systemctl enable apache2
+sudo apt install -y nginx
+sudo systemctl enable --now nginx
 
 # install php7.4
 LC_ALL=C.UTF-8 sudo add-apt-repository --yes ppa:ondrej/php
 sudo apt update
-sudo apt install -y php7.4
-sudo apt install -y php7.4-cli php7.4-json php7.4-common php7.4-mysql php7.4-zip php7.4-gd php7.4-mbstring php7.4-curl php7.4-xml php7.4-bcmath php7.4-intl
-sudo apt install -y php8.2
-sudo apt install -y php8.2-cli php8.2-common php8.2-mysql php8.2-zip php8.2-gd php8.2-mbstring php8.2-curl php8.2-xml php8.2-bcmath php8.2-intl
+sudo apt install -y php7.4 php7.4-common php7.4-cli php7.4-fpm php7.4-json php7.4-mysql php7.4-zip php7.4-gd php7.4-mbstring php7.4-curl php7.4-xml php7.4-bcmath php7.4-intl
+sudo apt install -y php8.1 php8.1-common php8.1-cli php8.1-fpm php8.1-mysql php8.1-zip php8.1-gd php8.1-mbstring php8.1-curl php8.1-xml php8.1-bcmath php8.1-intl php8.1-bz2 php8.1-gmp php8.1-imap
+sudo apt install -y php8.2 php8.2-common php8.2-cli php8.2-fpm php8.2-mysql php8.2-zip php8.2-gd php8.2-mbstring php8.2-curl php8.2-xml php8.2-bcmath php8.2-intl php8.2-bz2 php8.2-gmp php8.2-imap
+sudo apt install -y php8.4 php8.4-common php8.4-cli php8.4-fpm php8.4-mysql php8.4-zip php8.4-gd php8.4-mbstring php8.4-curl php8.4-xml php8.4-bcmath php8.4-intl php8.4-bz2 php8.4-gmp
+sudo apt install -y php-imagick php-phpseclib php-php-gettext
 
 # install composer
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+php -r "if (hash_file('sha384', 'composer-setup.php') === 'dac665fdc30fdd8ec78b38b9800061b4150413ff2e3b6f88543c636f7cd84f6db9189d43a81e5503cda447da73c7e5b6') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
 php composer-setup.php
 php -r "unlink('composer-setup.php');"
 sudo mv composer.phar /usr/local/bin/composer
 
 # install mariadb
 sudo apt install -y mariadb-server
-sudo systemctl start mariadb
-sudo systemctl enable mariadb
+sudo systemctl enable --now mariadb
 # sudo mysql_secure_installation
 
 # install phpmyadmin
 sudo apt install -y phpmyadmin
+sudo ln -s /usr/share/phpmyadmin /var/www/phpmyadmin
 
 # install bun
 curl -fsSL https://bun.sh/install | bash
