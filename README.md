@@ -20,7 +20,7 @@ curl -o- https://raw.githubusercontent.com/qopiku/ubuntu-setup/main/wsl.sh | bas
 - TypeScript `latest`
 - Vercel CLI `latest`
 - Nginx
-- PHP `7.4` `8.1` `8.2` `8.4`
+- PHP `7.4` `8.1` `8.2` `8.4` (default: `8.4`)
 - [Composer](https://getcomposer.org) `latest`
 - MariaDB `latest`
 - phpMyAdmin `latest`
