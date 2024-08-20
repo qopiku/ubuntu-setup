@@ -43,11 +43,11 @@ npm i -g npm@latest
 # install personal utility
 npm i -g typescript vercel commitizen jpeg-recompress-bin svgo minify stacks-cli svgo wappalyzer@6.10.66
 
-# install apache2
+# install nginx
 sudo apt install -y nginx
 sudo systemctl enable --now nginx
 
-# install php7.4
+# install php
 LC_ALL=C.UTF-8 sudo add-apt-repository --yes ppa:ondrej/php
 sudo apt update
 sudo apt install -y php7.4 php7.4-common php7.4-cli php7.4-fpm php7.4-json php7.4-mysql php7.4-zip php7.4-gd php7.4-mbstring php7.4-curl php7.4-xml php7.4-bcmath php7.4-intl
